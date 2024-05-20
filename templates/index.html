@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Consumption Prediction Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e272e;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #0a3d62;
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        main {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #2f3640;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .section {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #34495e;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .section h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .section h3{
+          font-size: 16px;
+          margin-bottom: 4px;
+        }
+        .section p {
+            font-size: 15px;
+            line-height: 1.6;
+            text-align: justify;
+            text-justify: inter-word;
+            max-width: 800px;
+            margin: 4 auto;
+        }
+        .form-group {
+            margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        form label, form select, form input, form button {
+            font-size: 18px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .result-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .result-section img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        a {
+          color: #26de82;
+          text-decoration: none;
+          position: relative;
+          transition: color 0.3s ease-in-out;
+      }
+        a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            display: block;
+            background: #26de82;
+            transition: width 0.3s;
+            bottom: -2px;
+            left: 0;
+      }
+          a:hover {
+              color: #ffffff;
+      }
+          a:hover::after {
+              width: 100%;
+      }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Oceania Fish & Seafood Consumption Prediction Dashboard</h1>
+    </header>
+    <main>
+        <div class="section">
+
+            <h2>About the Model</h2>
+            <p>This model predicts the fish & seafood consumption per capita for various regions in Oceania. It makes its predictions based on historical data ranging from 1961 to 2017, and it uses polynomial regression to provide these estimates. The confidence interval shown in the graph represents the range within which the actual consumption is likely to fall, with 95% confidence.</p>
+            <p> Usage: Select a country/region from the dropdown, provide a year (in the future, so 2018 onwards), and then press the predict button to view the plot.</p>
+            <p>Data is from: <a href="https://www.kaggle.com/datasets/sergegeukjian/fish-and-overfishing?select=fish-and-seafood-consumption-per-capita.csv" target="_blank">Kaggle: Fish and Overfishing Dataset</a></p>
+        </div>
+        <div class="section">
+            <h2>Inputs</h2>
+            <form action="/" method="post">
+                <div class="form-group">
+                    <label for="country">Select Country/Region:</label>
+                    <select name="country" id="country">
+                        {% for country in countries %}
+                            <option value="{{ country }}">{{ country }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="year">Enter Year:</label>
+                    <input type="number" id="year" name="year" min="2018" required>
+                </div>
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+        {% if prediction %}
+            <div class="section">
+                <div class="result-section">
+                    <h2>Prediction Result Based On Dataset</h2>
+                    <p>Predicted fish and seafood consumption for {{ country }} in {{ year }}: {{ prediction }} kg per capita</p>
+                    <p>95% Confidence Interval: {{ lower_bound | round(3) }} kg to {{ upper_bound | round(3) }} kg</p>
+                    <img src="{{ plot_url }}" alt="Prediction Plot">
+                </div>
+            </div>
+        {% elif error %}
+            <div class="section error">
+                <p>There was an error making the prediction. Please try again.</p>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>
